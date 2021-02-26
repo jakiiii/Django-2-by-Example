@@ -1,3 +1,3 @@
-# Django Example By 2
+# Django 2 By Example
 ## Example Code
 
