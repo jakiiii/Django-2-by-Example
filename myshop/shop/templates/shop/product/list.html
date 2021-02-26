@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if category %}{{ category.name }}{% else %}{% endif %}{{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    Category
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="{% url 'product_list' %}" style="text-decoration: none;">All Product</a></li>
+
+                    {% for c in categories %}
+                    <li class="list-group-item" {% if category.slug == c.slug %}style="background: #555;" {% endif %}><a href="{{ c.get_absolute_url }}" style="text-decoration: none;">{{ c.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4">
+                    <div class="card" style="width: 18rem;">
+                        <a href="{{ product.get_absolute_url }}">
+                            <img class="card-img-top" style="width: 285px; height: 160px;" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" alt="Card image cap">
+                        </a>
+                        <div class="card-body">
+                            <div style="height: 50px;">
+                                <h5 class="card-title"><a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: #000;">{{ product.name }}</a></h5>
+                            </div>
+                            <p class="card-text">Price: {{ product.price }} Taka</p>
+                            <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">View Details</a>
+                                </div>
+                                <div class="col-sm">
+                                    <form action="{% url "cart_add" product.id %}" method="post">{% csrf_token %}
+                                        <input type="hidden" value="1" name="quantity">
+                                        <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

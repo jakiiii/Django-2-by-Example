@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <p class="card-text">
+                You have been successfully logout.
+                You can <a href="{% url 'login' %}">Login again</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

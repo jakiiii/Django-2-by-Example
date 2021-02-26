@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Update Your Account{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Update Your Account</h5>
+            <p class="card-text">You can update your account information.</p>
+            <form method="post" action="." enctype="multipart/form-data">{% csrf_token %}
+                {{ user_form.as_p }}
+                {{ profile_form.as_p }}
+                <button type="submit" class="btn btn-secondary">Save</button>
+            </form>
+            <br/>
+            <p><a href="{% url 'login' %}" style="text-decoration: none;">Login</a></p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}{{ user.get_full_name }}{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="padding: 1rem;">
+        <div class="row">
+            <div class="col-2">
+                <a href="{{ user.get_absolute_url }}">
+                    {% thumbnail user.profile.photo "140x140" crop="100%" as im %}
+                        <img src="{{ im.url }}" class="img-thumbnail">
+                    {% endthumbnail %}
+                </a>
+            </div>
+            <div class="col-10">
+                <div>
+                    <p class="h5">
+                        <a href="{{ user.get_absolute_url }}" style="text-decoration: none;">{{ user.get_full_name }}</a>
+                    </p>
+                    <!-- follow section -->
+                    {% with total_followers=user.followers.count %}
+                        follower{{ total_followers|pluralize }}
+                    {% endwith %}
+
+                    <!-- follow section -->
+                    <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="btn btn-sm btn-success follow button">
+                        {% if request.user not in user.followers.all %}
+                            Follow
+                        {% else %}
+                            Unfollow
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div>
+            {% include 'images/list_ajax.html' with images=user.images_created.all %}
+        </div>
+    </div>
+{% endblock %}

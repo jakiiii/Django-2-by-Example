@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %} {% trans 'Checkout' %} || {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Checkout</h2><br/>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        {% trans 'Your Order' %}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for item in cart %}
+                            <li class="list-group-item">{{ item.quantity }} x {{ item.product.name }} - {{ item.total_price|floatformat:'2' }} Taka</li>
+                        {% endfor %}
+                        {% if cart.coupon %}
+                        <li class="list-group-item">
+                            {% blocktrans with code=cart.coupon.code discount=cart.coupon.discount %}
+                            "{{ code }}" ({{ discount }})% off
+                            <span> -{{ cat.get_discount|floatformat:'2' }} Taka</span>
+                            {% endblocktrans %}
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item">{% trans 'Total:' %} {{ cart.get_total_price_after_discount|floatformat:'2' }} Taka</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="." method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-success">{% trans 'Place Order' %}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h1>{% trans 'JTRO' %}</h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}

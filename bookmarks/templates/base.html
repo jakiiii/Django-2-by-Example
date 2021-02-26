@@ -1,0 +1,61 @@
+{% load static %}
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- css -->
+    {% include 'base/css.html' %}
+
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="."><b>JTRO</b></a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item {% if section == "dashboard" %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'dashboard' %}">{{ request.user.last_name.upper }} - Dashboard</a>
+                    </li>
+                    <li class="nav-item {% if section == "images" %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'list' %}">Images</a>
+                    </li>
+                    <li class="nav-item {% if section == "people" %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'user_list' %}">People</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">x</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="col-12" style="padding-top: 2rem;">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<! -- JavaScript -->
+{% include 'base/js.html' %}
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-8">
+            <p class="h2">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</p>
+            {% with total_images_created=request.user.images_created.count %}
+                <p>Welcome to your dashboard. You have bookmarekd {{ total_images_created }} image {{ total_images_created|pluralize }}</p>
+            {% endwith %}
+
+            <p>Drag the following button to your bookmarks toolbar to bookmark images from other websites ->
+                <a href="{% static 'js/bookmarklet_launcher.js' %}" class="btn btn-primary">Bookmark it</a>
+            </p>
+
+            <div>
+                <h4>Activity</h4>
+                {% for action in actions %}
+                    {% include 'actions/detail.html' %}
+                {% endfor %}
+            </div>
+
+        </div>
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    Profile Settings
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="{% url 'password_change' %}" style="text-decoration: none;">Change Password</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{% url 'edit' %}" style="text-decoration: none;">Update Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

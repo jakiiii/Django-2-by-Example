@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load cache %}
+{% block title %} {{ object.title }} || {{ block.super }}{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    {{ object.title }}
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for m in object.modules.all %}
+                    <li class="list-group-item" data-id="{{ m.id }}" {% if m == module %}style="background: #555;" {% endif %}>
+                        <a href="{% url "student_course_detail_module" object.id m.id %}" style="text-decoration: none;">
+                            Module <span>{{ m.order|add:1 }}</span>
+                            {{ m.title }}
+                        </a>
+                    </li>
+                        {% empty %}
+                        <p>No module yet.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1 class="h1">{{ module.title }}</h1><hr/>
+            <div class="card">
+                <div class="card-body">
+                {% cache 600 module_contents module %}
+                    {% for content in module.contents.all %}
+                        {% with item=content.item %}
+                            <h5>{{ item.title }}</h5><br/>
+                            {{ item.render }}
+                        {% endwith %}
+                    {% endfor %}
+                {% endcache %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

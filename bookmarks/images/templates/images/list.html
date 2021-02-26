@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Image Bookmark{% endblock %}
+
+
+{% block content %}
+    <h3>Images Bookmarked</h3>
+    <div class="row">
+        <div class="col-sm-1"><a href="{% url 'image_create' %}" class="btn btn-warning btn-sm">Add Image</a><br/></div>
+        <div class="col-sm"><a href="{% url 'ranking' %}" class="btn btn-warning btn-sm">Most Viewed Image</a></div>
+    </div>
+    <br/>
+    {% include 'images/list_ajax.html' %}
+{% endblock %}
+
+
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function(){
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+            block_request = true;
+            page += 1;
+            $.get('?page=' + page, function(data) {
+            if(data == '') {
+                empty_page = true;
+            }
+            else {
+                block_request = false;
+            $('#image-list').append(data);
+            }
+        });
+        }
+    });
+{% endblock %}

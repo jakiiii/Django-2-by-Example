@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %} Cart || {{ block.super }}{% endblock %}
+
+{% block content %}
+    <h4>{% trans 'Cart Table' %}</h4>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Image</th>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Remove</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Total Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart %}
+            {% with product=item.product %}
+                <tr>
+                    <th scope="row">
+                        <a href="{{ product.get_absolute_url }}">
+                            <img class="card-img-top" style="width: 80px; height: 80px;" src="
+                                    {% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}"
+                                 alt="{{ product.name }}">
+                        </a>
+                    </th>
+                    <td>{{ product.name }}</td>
+                    <td>
+                        <form action="{% url 'cart_add' product.id %}" method="post">{% csrf_token %}
+                            {{ item.update_quantity_form.quantity }}
+                            {{ item.update_quantity_form.update }}
+                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td><a href="{% url 'cart_remove' product.id %}" class="btn btn-sm btn-danger">Remove</a></td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.total_price }}</td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+        {% if cart.coupon %}
+            <tr>
+                <td colspan="4"></td>
+                <td>Subtotal</td>
+                <td>{{ cart.get_total_price|floatformat:'2' }} Taka</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>
+                    {{ cart.coupon.code }}
+                    ({{ cart.coupon.discount }}% off)
+                </td>
+                <td class="num neg">
+                    -{{ cart.get_discount|floatformat:'2' }} Taka
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td colspan="4"></td>
+            <td>Total Price</td>
+            <td>{{ cart.get_total_price_after_discount|floatformat:'2' }} Taka</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-md-7"></div>
+        <div class="col-md">
+            <p class="text-info">Apply a coupon:</p>
+            <form class="{% url 'coupon_apply' %}" method="post">{% csrf_token %}
+                {{ coupon_apply_form }}
+                <button type="submit" class="btn btn-sm btn-info">{% trans 'Coupon Apply' %}</button>
+            </form>
+        </div>
+    </div>
+    <div class="d-flex flex-row-reverse">
+        <div style="margin: 1.5rem 8rem 0 0;">
+            <a href="{% url 'order_create' %}" class="btn btn-sm btn-primary">{% trans 'Checkout' %}</a>
+        </div>
+    </div>
+    <hr/>
+    <div>
+        <h4>{% trans 'People who bought this also bought' %}</h4>
+        {% if recommended_products %}
+            {% for rp in recommended_products %}
+                <div class="col-md-4">
+                    <div class="card" style="width: 18rem;">
+                        <a href="{{ rp.get_absolute_url }}">
+                            <img class="card-img-top" style="width: 285px; height: 160px;" src="
+                                    {% if rp.image %}{{ rp.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}"
+                                 alt="Card image cap">
+                        </a>
+                        <div class="card-body">
+                            <div style="height: 50px;">
+                                <h5 class="card-title"><a href="{{ rp.get_absolute_url }}"
+                                                          style="text-decoration: none; color: #000;">{{ rp.name }}</a>
+                                </h5>
+                            </div>
+                            <p class="card-text">Price: {{ rp.price }} Taka</p>
+                            <p class="card-text">{{ rp.description|truncatechars:100 }}</p>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <a href="{{ rp.get_absolute_url }}" class="btn btn-primary btn-sm">View Details</a>
+                                </div>
+                                <div class="col-sm">
+                                    <form action="{% url "cart_add" rp.id %}" method="post">{% csrf_token %}
+                                        <input type="hidden" value="1" name="quantity">
+                                        <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

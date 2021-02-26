@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if subject %}{{ subject.title }} || {% endif %}{{ block.super }}{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    Our Courses
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="{% url 'course_list' %}" style="text-decoration: none;">Subjects</a></li>
+
+                    {% for s in subjects %}
+                    <li class="list-group-item" {% if subject == s %}style="background: #555;" {% endif %}><a href="{% url 'course_list_subject' s.slug %}" style="text-decoration: none;">{{ s.title }} <span>({{ s.total_courses }})</span></a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div>
+                {% if subject %}
+                    <h2>{{ subject.title }}</h2>
+                {% else %}
+                    <h2>All Courses</h2>
+                {% endif %}
+            </div><hr/>
+        <div class="row">
+            {% for course in courses %}
+                {% with subject=course.subject %}
+                    <div class="col-4">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{% url 'course_detail' course.slug %}" style="text-decoration: none; color: #000;">{{ course.title }}</a></h5>
+                                <p class="card-text">
+                                    <a href="{% url 'course_list_subject' subject.slug %}" style="text-decoration: none;">{{ subject }}</a><br/>
+                                    Total modules: {{ course.total_modules }}<br/>
+                                    Instructor: {{ course.owner.get_full_name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+        </div>
+    </div>
+{% endblock %}

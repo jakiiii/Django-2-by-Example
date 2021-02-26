@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Order Success || {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Thank You</h2>
+        <p>Your order has benn successfully completed. Your order number is <strong>{{ order.id }}</strong></p>
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+<div class="card" style="width: 18rem;">
+    <div class="card-header">
+        Latest Post
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for post in latest_posts %}
+            <li class="list-group-item">
+                <a href="{{ post.get_absolute_url }}" style="text-decoration: none;">{{ post.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

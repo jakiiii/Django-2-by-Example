@@ -1,0 +1,19 @@
+{% load thumbnail %}
+
+
+{% block content %}
+    <div class="row">
+        {% for image in images %}
+            <div class="col-3">
+                {% thumbnail image.image "200x200" crop="50%" as im %}
+                    <a href="{{ image.get_absolute_url }}" class="img-thumbnail">
+                        <img src="{{ im.url }}">
+                    </a>
+                {% endthumbnail %}
+                <div>
+                    <a href="{{ image.get_absolute_url }}" class="btn btn-link" style="text-decoration: none;">{{ image.title }}</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

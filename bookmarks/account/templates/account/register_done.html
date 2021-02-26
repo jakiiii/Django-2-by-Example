@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Registration Successful{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Registration Successful. Welcome {{ new_user.fist_name }} {{ new_user.last_name }}</h5>
+            <p class="card-text">Your account has been successfully crated. You can <a href="{% url 'login' %}">login</a></p>
+        </div>
+    </div>
+{% endblock %}

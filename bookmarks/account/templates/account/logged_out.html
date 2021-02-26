@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Logged out{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h4 class="card-title">Logged out</h4>
+            <p class="card-text">
+                You have been successfully logged out. YOu can <a href="{{ url 'login' }}">login again</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% load static %}
+{% load i18n %}
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- css -->
+    {% include 'base/css.html' %}
+
+    <title>{% block title %}{% trans "jTro Shop | Django Example 2" %}{% endblock %}</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'product_list' %}"><b>{% trans 'JTRO' %}</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if section == "dashboard" %}active{% endif %}">
+                    <a class="nav-link" href="#">{% trans 'Dashboard' %}</a>
+                </li>
+                <li class="nav-item">
+                    {% with total_items=cart|length %}
+                        <a class="nav-link" href="{% url 'cart_detail' %}">
+                            {% if cart|length > 0 %}
+                                {% trans 'Cart add:' %}
+                                {% blocktrans with total_items_plural=total_items|pluralize %}
+                                    {{ total_items }} item{{ total_items|pluralize }}
+                                {% endblocktrans %}
+                            {% else %}
+                                {% trans 'Cart Empty' %}
+                            {% endif %}
+                        </a>
+                    {% endwith %}
+                </li>
+            </ul>
+            <!-- Translate language -->
+            <ul class="navbar-nav mr-auto">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                <li class="nav-item">
+                    <a class="nav-link" href=".">{% trans 'Language:' %}</a>
+                </li>
+                {% for language in languages %}
+                <li class="nav-item">
+                    <a href="/{{ language.code }}/" class="nav-link {% if language.code == LANGUAGE_CODE %}active{% endif %}">{{ language.name_local }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">x</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div style="padding-top: 1.5rem;">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<! -- JavaScript -->
+{% include 'base/js.html' %}
+</body>
+</html>

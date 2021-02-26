@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }} || {{ block.super }}{% endblock %}
+
+
+{% block content %}
+    {% with subject=course.subject %}
+        <div>
+            <h2 class="card-title">{{ object.title }}</h2><hr/>
+            <h4>Overview</h4>
+            <p>
+                <a href="{% url 'course_list_subject' subject.slug %}" style="text-decoration: none;">{{ subject.title }}</a><br/>
+                Total Modules: {{ course.modules.count }}<br/>
+                Instructor: {{ course.owner.get_full_name }}
+            </p>
+            <p>
+                {{ object.overview|linebreaks }}
+                {% if request.user.is_authenticated %}
+                    <form action="{% url 'student_enroll_course' %}" method="post">{% csrf_token %}
+                        {{ enroll_form }}
+                        <button type="submit" class="btn btn-sm btn-warning">Enroll now</button>
+                    </form>
+                {% else %}
+                        <a href="{% url 'student_registration' %}" class="btn btn-sm btn-warning">Registration to enroll</a>
+                {% endif %}
+            </p>
+        </div>
+    {% endwith %}
+{% endblock %}

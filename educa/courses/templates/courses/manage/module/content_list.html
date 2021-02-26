@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load course %}
+{% block title %}Module {{ module.order | add:1 }}: {{ module.title }} || {{ block.super }}{% endblock %}
+
+
+{% block content %}
+    <div>
+        {% with course=module.course %}
+            <h1>{{ course.title }}</h1><hr/>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header">
+                            Module
+                        </div>
+                        <ul class="list-group list-group-flush" id="modules">
+                            {% for m in course.modules.all %}
+                            <li class="list-group-item" data-id="{{ m.id }}" {% if m == module %}style="background: #555;"{% endif %}>
+                                <a href="{% url 'module_content_list' m.id %}" style="text-decoration: none;">
+                                    Module {{ m.order|add:1 }} ({{ m.title }})
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No modules yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'course_module_update' course.id %}" class="btn btn-sm btn-primary">Edit Modules</a>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div>
+                        <h4>Module {{ module.order|add:1 }}: {{ module.title }}</h4>
+                    </div>
+                    <div>
+                        <div class="card" style="width: 17.47rem;">
+                            <div class="card-header">
+                                Add new content:
+                            </div>
+                            <ul class="list-group list-group-horizontal">
+                                <li class="list-group-item"><a href="{% url 'module_content_create' module.id "text" %}" style="text-decoration: none; color: #000;">Text</a></li>
+                                <li class="list-group-item"><a href="{% url 'module_content_create' module.id "image" %}" style="text-decoration: none; color: #000;">Image</a></li>
+                                <li class="list-group-item"><a href="{% url 'module_content_create' module.id "video" %}" style="text-decoration: none; color: #000;">Video</a></li>
+                                <li class="list-group-item"><a href="{% url 'module_content_create' module.id "file" %}" style="text-decoration: none; color: #000;">File</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <br/>
+                    <div id="module-contents">
+                        <h5>Module contents:</h5>
+                        {% for content in module.contents.all %}
+                            <div data-id="{{ content.id }}">
+                            {% with item=content.item %}
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <p class="card-title">{{ item }} ({{ item|model_name }})</p>
+                                                <ul class="list-group list-group-horizontal">
+                                                    <li class="list-group-item">
+                                                        <a href="{% url "module_content_update" module.id item|model_name item.id %}" class="btn btn-sm btn-info">Edit</a></li>
+                                                    <li class="list-group-item">
+                                                        <form action="{% url 'module_content_delete' content.id %}" method="post">{% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-7">
+                                                {% if item.content %}
+                                                    {{ item.content|truncatechars:150 }}
+                                                {% elif item.image %}
+                                                    <img src="{{ item.image.url }}" style="width: 120px; height: 70px;" class="img-thumbnail" />
+                                                {% elif item.url %}
+                                                    <div class="embed-responsive embed-responsive-16by9">
+                                                        <iframe class="embed-responsive-item" src="{{ item.url }}" allowfullscreen style="width: 120px; height: 70px;"></iframe>
+                                                    </div>
+                                                {% elif item.file %}
+                                                    <a href="{{ item.file.url }}" class="btn btn-sm btn-warning">Download File</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                            </div>
+                            {% empty %}
+                            <p>This module has no contents yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endwith %}
+    </div><br/>
+{% endblock %}
+
+
+{% block domready %}
+  $('#modules').sortable({
+      stop: function(event, ui) {
+          modules_order = {};
+          $('#modules').children().each(function(){
+              // update the order field
+              $(this).find('.order').text($(this).index() + 1);
+              // associate the module's id with its order
+              modules_order[$(this).data('id')] = $(this).index();
+          });
+          $.ajax({
+              type: 'POST',
+              url: '{% url "module_order" %}',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+                 data: JSON.stringify(modules_order)
+             });
+      }
+  });
+
+  $('#module-contents').sortable({
+      stop: function(event, ui) {
+          contents_order = {};
+          $('#module-contents').children().each(function(){
+              // associate the module's id with its order
+              contents_order[$(this).data('id')] = $(this).index();
+          });
+
+          $.ajax({
+              type: 'POST',
+              url: '{% url "content_order" %}',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+              data: JSON.stringify(contents_order),
+          });
+      }
+  });
+{% endblock %}

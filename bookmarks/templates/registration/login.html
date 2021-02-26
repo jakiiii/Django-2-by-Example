@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <p class="card-text">Please, use the following form to log-in:</p>
+            {% if form.errors %}
+                <p class="text-info">Your username and password didn't match. Please try again.</p>
+            {% else %}
+                <p class="text-info">Please, use the following form to log-in:</p>
+            {% endif %}
+            <form method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn btn-secondary">Login</button>
+            </form>
+        <br/>
+            <p>
+                <a href="{% url 'register' %}" class="" style="text-decoration: none;">Crate a account</a><br/>
+                <a href="{% url 'password_reset' %}" class="" style="text-decoration: none;">Forgotten password?</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

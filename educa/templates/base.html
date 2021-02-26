@@ -1,0 +1,76 @@
+{% load static %}
+{% load i18n %}
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- css -->
+    {% include 'base/css.html' %}
+
+    <title>{% block title %}{% trans "jTro | Django Example 2" %}{% endblock %}</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'course_list' %}"><b>{% trans 'JTRO' %}</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                {% if request.user.is_authenticated %}
+                    {% if request.user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage_course_list' %}">{% trans 'Management Dashboard' %}</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'student_course_list' %}">{% trans 'Student Dashboard' %}</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">{% trans 'Logout' %}</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">{% trans 'Login' %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'student_registration' %}">{% trans 'Registration' %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">x</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div style="padding-top: 1.5rem;">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<! -- JavaScript -->
+{% include 'base/js.html' %}
+
+<script>
+    $(document).read(function () {
+        {% block domready %}
+        {% endblock %}
+    });
+</script>
+</body>
+</html>

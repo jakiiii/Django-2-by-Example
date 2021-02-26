@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %} {{ product.name }} || {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <div>
+                <img class="card-img-top" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" alt="Card image cap">
+            </div><br/>
+            <div>
+                <form action="{% url "cart_add" product.id %}" method="post">{% csrf_token %}
+                    {{ cart_product_form }}
+                    <button type="submit" class="btn btn-success btn-sm">{% trans 'Add To Cart' %}</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title"><a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: #000;">{{ product.name }}</a></h2>
+                    <p class="card-text">
+                        <a href="{{ product.category.get_absolute_url }}" class="text-info" style="text-decoration: none;">{{ product.category }}</a>
+                    </p>
+                    <h5 class="card-text">{{ product.price }} Taka</h5>
+                    <p class="card-text">{{ product.description|linebreaks }}</p>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+            {% if recommended_products %}
+                {% for rp in recommended_products %}
+                    <div class="col-md-4">
+                        <div class="card" style="width: 18rem;">
+                            <a href="{{ rp.get_absolute_url }}">
+                                <img class="card-img-top" style="width: 285px; height: 160px;" src="{% if rp.image %}{{ rp.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" alt="Card image cap">
+                            </a>
+                            <div class="card-body">
+                                <div style="height: 50px;">
+                                    <h5 class="card-title"><a href="{{ rp.get_absolute_url }}" style="text-decoration: none; color: #000;">{{ rp.name }}</a></h5>
+                                </div>
+                                <p class="card-text">Price: {{ rp.price }} Taka</p>
+                                <p class="card-text">{{ rp.description|truncatechars:100 }}</p>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <a href="{{ rp.get_absolute_url }}" class="btn btn-primary btn-sm">View Details</a>
+                                    </div>
+                                    <div class="col-sm">
+                                        <form action="{% url "cart_add" rp.id %}" method="post">{% csrf_token %}
+                                            <input type="hidden" value="1" name="quantity">
+                                            <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
